@@ -1,26 +1,26 @@
 #include <bits/stdc++.h>
+#define SQRT 444
 using namespace std;
 typedef long long ll;
 
-// TLE on 4 testcases, result : *********t*ttt*
-// time complexity : O(N^1.5 log N)
-
-int SQRT;
-
-struct BIT {
-    int tree[100005], base;
-    void init(int x) { base = x + 2; }
-    void add(int x, int y) {
-        x += 2;
-        while(x <= base) tree[x] += y, x += x & -x;
-    }
-    int q(int x) {
+struct Bucket {
+    int sum[SQRT], st[200005];
+    void add(int x, int y) { st[x] += y, sum[x / SQRT] += y; }
+    int q(int s, int e) {
         int res = 0;
-        x += 2;
-        while(x) res += tree[x], x -= x & -x;
-        return res;
+        if(s / SQRT + 1 >= e / SQRT) {
+            for(int i=s; i<=e; i++) res += st[i];
+            return res;
+        }
+        else {
+            int l = s, r = e;
+            while(l / SQRT == s / SQRT) res += st[l++];
+            while(r / SQRT == e / SQRT) res += st[r--];
+            for(int i=l/SQRT; i<=r/SQRT; i++) res += sum[i];
+            return res;
+        }
     }
-}bit;
+}B;
 
 struct query {
     int s, e, num, ti;
@@ -31,23 +31,21 @@ int N, K, A[200005], chk[200005], on;
 ll ans;
 
 void f(int x, int y) {
-    if(chk[x] == 2) bit.add(x, -1), on--;
+    if(chk[x] == 2) B.add(x, -1), on--;
     chk[x] += y;
-    if(chk[x] == 2) bit.add(x, 1), on++;
+    if(chk[x] == 2) B.add(x, 1), on++;
 }
 
 int main() {
     freopen("friendcross.in", "r", stdin);
     freopen("friendcross.out", "w", stdout);
     scanf("%d %d", &N, &K);
-    SQRT = (int)sqrt(N * 2);
     for(int i=1; i<=N*2; i++) scanf("%d", A+i);
     for(int i=1; i<=N*2; i++) {
         if(i <= N) T[A[i]].s = i;
         else T[A[i]].e = i;
     }
     sort(T + 1, T + 1 + N);
-    bit.init(N);
     int s = 1, e = 0;
     for(int i=1; i<=N; i++) {
         while(T[i].e > e) f(A[++e], 1);
@@ -56,7 +54,7 @@ int main() {
         while(T[i].s < s) f(A[--s], 1);
         int u = min(N, A[s] + K);
         int d = max(0, A[s] - K - 1);
-        ans += (ll)(on - bit.q(u) + bit.q(d));
+        ans += (ll)(on - B.q(d + 1, u));
     }
     printf("%lld\n", ans);
 }
