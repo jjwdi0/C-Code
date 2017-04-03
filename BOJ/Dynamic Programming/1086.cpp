@@ -6,13 +6,13 @@ typedef long long ll;
 
 int N, K;
 string t[16];
-int inf[16][2], digit_mod[801]={1};
-ll fact[17]={1LL}, D[1<<16][103];
-ll gcd(ll x, ll y){return y?gcd(y, x%y):x;}
-main()
-{
+int inf[16][2], digit_mod[801] = {1};
+ll fact[17] = {1LL}, D[1<<16][103];
+ll gcd(ll x, ll y){ return y ? gcd(y, x % y) : x; }
+
+int main() {
 	scanf("%d", &N);
-	for(int i=0; i<N; i++)cin >> t[i];
+	for(int i=0; i<N; i++) cin >> t[i];
 	scanf("%d", &K);
 	for(int i=0; i<N; i++) {
 		int r = 0;
